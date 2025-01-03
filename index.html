@@ -31,14 +31,20 @@
             margin: 0 20px;
         }
 
-        header nav ul li a {
+        header nav ul li a,
+        header nav ul li button {
             color: #2dd4bf;
             text-decoration: none;
             font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
             transition: color 0.3s;
+            font-size: 1rem;
         }
 
-        header nav ul li a:hover {
+        header nav ul li a:hover,
+        header nav ul li button:hover {
             color: #38bdf8;
         }
 
@@ -49,6 +55,8 @@
             height: 100vh;
             position: relative;
             overflow: hidden;
+            padding: 20px;
+            text-align: center;
         }
 
         .video-fullscreen {
@@ -64,20 +72,23 @@
 
         .container {
             position: relative;
-            text-align: center;
             z-index: 1;
+            max-width: 1200px;
+            width: 100%;
         }
 
         .logo-container .faeria-logo {
-            width: 520px;
+            width: 300px;
+            max-width: 80%;
             margin-bottom: 20px;
         }
 
         .text-heading {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #2dd4bf;
             text-shadow: 0 0 15px #38bdf8, 0 0 30px #0ea5e9;
+            margin-bottom: 20px;
         }
 
         .text-heading small {
@@ -86,18 +97,24 @@
             color: #38bdf8;
         }
 
+        .buttons {
+            margin-top: 20px;
+        }
+
         .buttons .btn {
             display: inline-block;
-            padding: 15px 40px;
-            margin-top: 20px;
-            font-size: 1.2rem;
+            padding: 12px 30px;
+            margin: 10px;
+            font-size: 1rem;
             color: #ffffff;
             background: linear-gradient(90deg, #2dd4bf, #38bdf8);
             text-transform: uppercase;
             text-decoration: none;
+            border: none;
             border-radius: 30px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s;
+            transition: transform 0.3s, background 0.3s;
+            cursor: pointer;
         }
 
         .buttons .btn:hover {
@@ -111,6 +128,7 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 20px;
+            padding: 0 20px;
         }
 
         .spotlight {
@@ -210,10 +228,30 @@
             width: 50px;
             margin: 0 10px;
         }
-    </style>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/@solana/web3.js/1.73.0/solana-web3.min.js"></script>
 
+        @media (max-width: 768px) {
+            .text-heading {
+                font-size: 2rem;
+            }
+
+            .spotlight {
+                width: 100%;
+            }
+
+            .logo-container .faeria-logo {
+                width: 200px;
+            }
+
+            .buttons .btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Solana Web3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/@solana/web3.js/1.73.0/solana-web3.min.js"></script>
 </head>
 <body>
     <header>
@@ -222,97 +260,32 @@
                 <li><a href="#">Home</a></li>
                 <li><a href="#">Features</a></li>
                 <li><a href="#">Community</a></li>
-                <li><a style="cursor: pointer;" class ="btn" >Connect Wallet </a></li>
+                <li>
+                    <button class="btn" id="connect-wallet-btn" aria-label="Connect Wallet">Connect Wallet</button>
+                </li>
             </ul>
         </nav>
     </header>
-<script>
-	// Include this script in your HTML file
-// Make sure to include the Solana Web3.js library: https://cdnjs.cloudflare.com/ajax/libs/@solana/web3.js/1.73.0/solana-web3.min.js
-// Include SweetAlert2 library for nicer alerts: https://cdn.jsdelivr.net/npm/sweetalert2@11
 
-// Get the button element
-document.addEventListener('DOMContentLoaded', () => {
-    // Get all buttons with the class 'btn'
-    const buttons = document.querySelectorAll('.btn');
-
-    if (!buttons || buttons.length === 0) {
-        console.error('No buttons with class "btn" found in your HTML.');
-        return;
-    }
-
-    // Initial button state for all buttons
-    buttons.forEach(button => {
-        button.textContent = "Start Now";
-
-        // Wallet connection logic
-        async function connectWallet() {
-            if (!window.solana || !window.solana.isPhantom) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Phantom Wallet not found!',
-                    text: 'Please install Phantom Wallet to proceed.',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
-
-            try {
-                // Connect to the wallet
-                const response = await window.solana.connect();
-                const publicKey = response.publicKey.toString();
-                
-                // Display connected message
-                button.textContent = `Connected as: ${publicKey.slice(0, 5)}...${publicKey.slice(-5)}`;
-
-                // Change to "Play Now!" after 2 seconds
-                setTimeout(() => {
-                    button.textContent = "Play Now!";
-                }, 2000);
-
-                // Attach event for "Play Now!"
-                button.onclick = () => {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Beta Access',
-                        text: 'Beta is temporarily closed. Come back on 15/01/2025!',
-                        confirmButtonText: 'Got it!'
-                    });
-                };
-            } catch (err) {
-                console.error("Connection failed:", err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Connection Failed',
-                    text: 'Failed to connect to the wallet. Please try again.',
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-
-        // Attach click event listener to each button
-        button.addEventListener('click', connectWallet);
-    });
-});
-
-</script>
     <section class="headingv2">
         <video autoplay loop muted class="video-fullscreen">
             <source src="Crypto_Header.mp4" type="video/mp4">
+            Your browser does not support the video tag.
         </video>
         <div class="container">
             <div class="logo-container">
-                <img src="logo-cards.png" alt="Crypto Logo" class="faeria-logo">
+                <img src="logo-cards.png" alt="Crypto Conquest Logo" class="faeria-logo">
                 <div class="text-heading">
                     Enter the Blockchain Era
                     <small>Play. Earn. Dominate.</small>
                 </div>
-<div class="buttons">
-    <a style="cursor: pointer;" class="btn">Start Now</a>
-</div>
+                <div class="buttons">
+                    <button class="btn" id="start-now-btn" aria-label="Start Now">Start Now</button>
+                </div>
             </div>
         </div>
     </section>
+
     <section class="spotlights-container">
         <div class="spotlight">
             <h2>Unique NFT Assets</h2>
@@ -339,26 +312,88 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>Play seamlessly on PC, mobile, and tablet. Take your conquest wherever you go!</p>
         </div>
     </section>
+
     <section class="reward-block">
         <img src="usp_draft.png" alt="Reward Highlights">
         <h2>Earn Rewards in Crypto</h2>
         <p>Participate in exclusive events and challenges to earn valuable cryptocurrency rewards.</p>
-        <video autoplay loop muted  >
-            <source src="trailer-mini.webm" type="video/mp4">
+        <video autoplay loop muted>
+            <source src="trailer-mini.webm" type="video/webm">
             Your browser does not support the video tag.
         </video>
     </section>
+
     <footer>
-        <img src="faeria-logo-medium-white.png" alt="Logo" class="footer-logo">
-<div class="footer-icons">
-    <a href="https://x.com/EnterFaeria" target="_blank" rel="noopener noreferrer">
-        <img style="height: 18px; width: 18px;" src="twitter.png" alt="Twitter">
-    </a>
-</div>
+        <img src="faeria-logo-medium-white.png" alt="Crypto Conquest Logo" class="footer-logo">
+        <div class="footer-icons">
+            <a href="https://x.com/EnterFaeria" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                <img src="twitter.png" alt="Twitter Icon">
+            </a>
+            <!-- Add more social icons here if needed -->
+        </div>
         <div class="footer-certifications">
             <img src="esrb-everyone.jpg" alt="ESRB Everyone">
         </div>
         <p>&copy; 2025 Crypto Conquest. All rights reserved.</p>
     </footer>
+
+    <script>
+        // Wait for the DOM to fully load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle Connect Wallet Button
+            const connectWalletBtn = document.getElementById('connect-wallet-btn');
+
+            async function connectWallet() {
+                if (!window.solana || !window.solana.isPhantom) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Phantom Wallet Not Found!',
+                        text: 'Please install the Phantom Wallet extension to connect.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                try {
+                    // Request wallet connection
+                    const response = await window.solana.connect();
+                    const publicKey = response.publicKey.toString();
+
+                    // Display connected message
+                    connectWalletBtn.textContent = `Connected: ${publicKey.slice(0, 5)}...${publicKey.slice(-5)}`;
+                    connectWalletBtn.disabled = true; // Disable the button after connection
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Wallet Connected',
+                        text: `Wallet connected as ${publicKey}`,
+                        confirmButtonText: 'OK'
+                    });
+                } catch (error) {
+                    console.error('Wallet connection failed:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Connection Failed',
+                        text: 'Unable to connect to the wallet. Please try again.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+
+            connectWalletBtn.addEventListener('click', connectWallet);
+
+            // Handle Start Now Button
+            const startNowBtn = document.getElementById('start-now-btn');
+
+            startNowBtn.addEventListener('click', () => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Beta Access',
+                    text: 'Beta is temporarily closed. Come back on 15/01/2025!',
+                    confirmButtonText: 'Got it!'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
